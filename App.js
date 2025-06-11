@@ -7,7 +7,12 @@ import Paciente from "./src/components/Paciente";
 export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
   const [pacientes, setPacientes] = useState([]);
+  const [paciente, setPaciente] = useState({});
 
+  const pacienteEditar = (id) => {
+    const pacienteEditar = pacientes.filter((paciente) => paciente.id === id);
+    setPaciente(pacienteEditar[0]);
+  };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Administrador</Text>
@@ -28,7 +33,13 @@ export default function App() {
         <FlatList
           data={pacientes}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <Paciente item={item} />}
+          renderItem={({ item }) => (
+            <Paciente
+              setModalVisible={setModalVisible}
+              item={item}
+              pacienteEditar={pacienteEditar}
+            />
+          )}
           style={styles.flatList}
         />
       )}
