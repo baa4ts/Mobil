@@ -54,7 +54,7 @@ export const Formulario = ({ modalVisible, setModalVisible, setPacientes, pacien
     setEmail('');
     setTelefono('');
     setFecha(new Date());
-     setSintomas('');
+    setSintomas('');
   };
 
   const formatearFecha = (date) =>
@@ -165,6 +165,12 @@ export const Formulario = ({ modalVisible, setModalVisible, setPacientes, pacien
 
           <View style={styles.contenedorBotones}>
             <TouchableOpacity
+              onPress={() => {
+                Alert.alert(
+                  "Aviso ❓",
+                  "Mantén presionado para salir del formulario"
+                );
+              }}
               onLongPress={() => setModalVisible(!modalVisible)}
               style={[styles.btnFormulario, styles.btnCancelar]}
             >

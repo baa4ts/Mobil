@@ -10,10 +10,10 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Administrador</Text>
+
       <Pressable
-        onPress={() => {
-          setModalVisible(!modalVisible);
-        }}
+        onPress={() => setModalVisible(!modalVisible)}
         style={({ pressed }) => [
           styles.btnNuevo,
           pressed && styles.btnNuevoPressed,
@@ -28,7 +28,8 @@ export default function App() {
         <FlatList
           data={pacientes}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <Paciente paciente={item} />}
+          renderItem={({ item }) => <Paciente item={item} />}
+          style={styles.flatList}
         />
       )}
 
@@ -45,19 +46,23 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "row-reverse",
-    justifyContent: "center",
-    alignItems: "center",
+    paddingTop: 40,
+    flexDirection: "column",
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    paddingHorizontal: 20,
   },
   btnNuevo: {
-    position: "absolute",
-    bottom: 20,
-    alignSelf: "center",
+    marginBottom: 10,
     backgroundColor: "#6D28D9",
-    marginBottom: "5%",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
+    alignSelf: "center",
   },
   btnNuevoPressed: {
     backgroundColor: "#5B21B6",
@@ -68,6 +73,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  flatList: {
+    flex: 1,
+    marginTop: 40,
+    marginHorizontal: 15,
   },
   noPacientes: {
     marginTop: 40,
