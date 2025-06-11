@@ -17,7 +17,8 @@
     "react-native-date-picker": "^5.0.13"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "eas-cli": "^16.9.0"
   },
   "private": true
 }
