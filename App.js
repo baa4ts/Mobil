@@ -1,24 +1,63 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
+import React, { use, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  FlatList,
+  Alert,
+  Modal,
+} from "react-native";
 
 import { Formulario } from "./src/components/Formulario";
 import Paciente from "./src/components/Paciente";
+import InformacionPaciente from "./src/components/InformacionPaciente";
 
 export default function App() {
   const [modalVisible, setModalVisible] = useState(false);
   const [pacientes, setPacientes] = useState([]);
   const [paciente, setPaciente] = useState({});
+  const [modalPaciente, setModalPaciente] = useState(false);
 
   const pacienteEditar = (id) => {
     const pacienteEditar = pacientes.filter((paciente) => paciente.id === id);
     setPaciente(pacienteEditar[0]);
   };
+
+  const eliminarPaciente = (id) => {
+    Alert.alert(
+      "¿ estas seguro de eliminar ?",
+      "Si lo eliminas no se podra recuperar",
+      [
+        { text: "Cancelar" },
+        {
+          text: "Si, Eliminar",
+          onPress: () => {
+            const pacientesActualizados = pacientes.filter(
+              (pacientesState) => pacientesState.id !== id
+            );
+
+            setPacientes(pacientesActualizados);
+          },
+        },
+      ]
+    );
+    console.log(`Eliminando: ${id}`);
+  };
+
+  const cerrarModal = () => {
+    setModalVisible(false);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Administrador</Text>
 
       <Pressable
-        onPress={() => setModalVisible(!modalVisible)}
+        onPress={() => {
+          setModalVisible(!modalVisible);
+          setPaciente({});
+        }}
         style={({ pressed }) => [
           styles.btnNuevo,
           pressed && styles.btnNuevoPressed,
@@ -37,19 +76,32 @@ export default function App() {
             <Paciente
               setModalVisible={setModalVisible}
               item={item}
+              setPaciente={setPaciente}
               pacienteEditar={pacienteEditar}
+              eliminarPaciente={eliminarPaciente}
+              setModalPaciente={setModalPaciente}
             />
           )}
           style={styles.flatList}
         />
       )}
 
-      <Formulario
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        pacientes={pacientes}
-        setPacientes={setPacientes}
-      />
+      {modalVisible && (
+        <Formulario
+          cerrarModal={cerrarModal}
+          pacientes={pacientes}
+          paciente={paciente}
+          setPacientes={setPacientes}
+          setPaciente={setPaciente}
+        />
+      )}
+
+      <Modal visible={modalPaciente} animationType="fade">
+        <InformacionPaciente
+          paciente={paciente}
+          setModalPaciente={setModalPaciente}
+        />
+      </Modal>
     </View>
   );
 }

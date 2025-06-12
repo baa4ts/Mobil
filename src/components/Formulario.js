@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Modal,
   Text,
@@ -9,18 +9,39 @@ import {
   ScrollView,
   Pressable,
   TouchableOpacity,
-  Alert
+  Alert,
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { setStatusBarNetworkActivityIndicatorVisible } from "expo-status-bar";
 
-export const Formulario = ({ modalVisible, setModalVisible, setPacientes, pacientes }) => {
+export const Formulario = ({
+  cerrarModal,
+  modalVisible,
+  setPacientes,
+  pacientes,
+  setPaciente: setPacienteInstancia,
+  paciente: PacienteOBJ,
+}) => {
   const [paciente, setPaciente] = useState("");
+  const [id, setId] = useState("");
   const [nombre, setNombre] = useState("");
   const [email, setEmail] = useState("");
   const [telefono, setTelefono] = useState("");
   const [fecha, setFecha] = useState(new Date());
   const [mostrarPicker, setMostrarPicker] = useState(false);
   const [sintomas, setSintomas] = useState("");
+
+  useEffect(() => {
+    if (Object.keys(PacienteOBJ).length > 0) {
+      setPaciente(PacienteOBJ.paciente);
+      setId(PacienteOBJ.id);
+      setNombre(PacienteOBJ.nombre);
+      setEmail(PacienteOBJ.email);
+      setTelefono(PacienteOBJ.telefono);
+      setFecha(new Date(PacienteOBJ.fecha));
+      setSintomas(PacienteOBJ.sintomas);
+    }
+  }, [PacienteOBJ]);
 
   const propietarioRef = useRef();
   const emailRef = useRef();
@@ -29,32 +50,41 @@ export const Formulario = ({ modalVisible, setModalVisible, setPacientes, pacien
 
   const handleCita = () => {
     if ([paciente, nombre, email, telefono, sintomas].includes("") || !fecha) {
-      Alert.alert(
-        "Datos Incompletos",
-        "Todos los campos son obligatorios"
-      );
+      Alert.alert("Datos Incompletos", "Todos los campos son obligatorios");
       return;
     }
 
     const nuevoPaciente = {
-      id: Date.now(),
       paciente,
       nombre,
       email,
       telefono,
       fecha,
-      sintomas
+      sintomas,
     };
 
-    setPacientes([...pacientes, nuevoPaciente]);
-    setModalVisible(!modalVisible);
+    if (id) {
+      nuevoPaciente.id = id;
 
-    setPaciente('');
-    setNombre('');
-    setEmail('');
-    setTelefono('');
+      const pacientesActualizados = pacientes.map((pacienteState) =>
+        pacienteState.id === id ? nuevoPaciente : pacienteState
+      );
+      console.log("pacinete actualizado");
+      setPacientes(pacientesActualizados);
+      setPacienteInstancia({});
+    } else {
+      console.log("nuevo");
+      nuevoPaciente.id = Date.now();
+      setPacientes([...pacientes, nuevoPaciente]);
+    }
+
+    setPaciente("");
+    setNombre("");
+    setEmail("");
+    setTelefono("");
     setFecha(new Date());
-    setSintomas('');
+    setSintomas("");
+    cerrarModal();
   };
 
   const formatearFecha = (date) =>
@@ -69,7 +99,8 @@ export const Formulario = ({ modalVisible, setModalVisible, setPacientes, pacien
       <SafeAreaView style={styles.contenido}>
         <ScrollView>
           <Text style={styles.titulo}>
-            Nueva <Text style={styles.tituloBold}>cita</Text>
+            {PacienteOBJ.id ? "Editar" : "Nuevo"}{" "}
+            <Text style={styles.tituloBold}>cita</Text>
           </Text>
 
           <View style={styles.campo}>
@@ -171,17 +202,22 @@ export const Formulario = ({ modalVisible, setModalVisible, setPacientes, pacien
                   "Mantén presionado para salir del formulario"
                 );
               }}
-              onLongPress={() => setModalVisible(!modalVisible)}
+              onLongPress={() => {
+                cerrarModal();
+                setPacienteInstancia({});
+              }}
               style={[styles.btnFormulario, styles.btnCancelar]}
             >
-              <Text style={styles.textoBtn}>Borrar</Text>
+              <Text style={styles.textoBtn}>Salir</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={[styles.btnFormulario, styles.btnGuardar]}
               onPress={handleCita}
             >
-              <Text style={styles.textoBtn}>Guardar</Text>
+              <Text style={styles.textoBtn}>
+                {PacienteOBJ.id ? "Editar" : "Agregar"}
+              </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>

@@ -1,12 +1,31 @@
 import React from "react";
-import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+} from "react-native";
 import { formatearFecha } from "../helpers/fecha";
 
-const Paciente = ({ item, setModalVisible, pacienteEditar }) => {
+const Paciente = ({
+  item,
+  setModalVisible,
+  setPaciente,
+  pacienteEditar,
+  eliminarPaciente,
+  setModalPaciente,
+}) => {
   const { nombre, fecha, id } = item;
 
   return (
-    <View style={styles.contenedor}>
+    <Pressable
+      style={styles.contenedor}
+      onPress={() => {
+        setModalPaciente(true);
+        setPaciente(item);
+      }}
+    >
       <Text style={styles.label}>Paciente:</Text>
       <Text style={styles.texto}>{nombre}</Text>
       <Text style={styles.fecha}>{formatearFecha(fecha)}</Text>
@@ -22,11 +41,16 @@ const Paciente = ({ item, setModalVisible, pacienteEditar }) => {
           <Text style={styles.btnText}>Editar</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.btn, styles.btnBorrar]}>
+        <TouchableOpacity
+          style={[styles.btn, styles.btnBorrar]}
+          onLongPress={() => {
+            eliminarPaciente(id);
+          }}
+        >
           <Text style={styles.btnText}>Borrar</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
